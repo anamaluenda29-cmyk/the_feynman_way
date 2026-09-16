@@ -44,7 +44,7 @@ if duda_usuario:
     [ GESTIÓN DE LA CONVERSACIÓN ]
     4. MANTENIMIENTO DEL HILO: Recuerda siempre el objetivo principal planteado al inicio. No permitas que la conversación se desvíe.
 
-    El usuario dice lo siguiente: 
+    El usuario dice lo siguiente:
     """
     prompt_final = regla_estricta + duda_usuario
 

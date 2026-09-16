@@ -6,9 +6,9 @@ from google import genai
 st.title("The Feynman Way")
 st.write("Fricción Cognitiva Activada. Advertencia: Las respuestas de este programa estan diseñadas para evitar la atrofia cognitiva y activar enlaces sinapticos. Este sistema tiene prohibido crear soluciones sin primero hacer que el usuario cree un esfuerzo cognitivo.")
 
-# 2. CONEXIÓN DEL MOTOR CON LA LLAVE DE SEGURIDAD
-api_key_secret = st.secrets.get(GEMINI_API_KEY) or os.enviroment.get("GEMINI_API_KEY")
-client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+# 2. CONEXIÓN DEL MOTOR CON LA LLAVE DE SEGURIDAD (CORREGIDO Y BLINDADO)
+api_key_secreta = st.secrets.get("GEMINI_API_KEY") or os.environ.get("GEMINI_API_KEY")
+client = genai.Client(api_key=api_key_secreta)
 
 # 3. MEMORIA TEMPORAL DE LA CONVERSACIÓN
 if "mensajes" not in st.session_state:

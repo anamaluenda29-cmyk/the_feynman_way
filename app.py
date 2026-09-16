@@ -49,7 +49,7 @@ if duda_usuario:
 
     # 6. LLAMADO AL MOTOR ESTABLE DE INTELIGENCIA ARTIFICIAL
     response = client.models.generate_content(
-        model='gemini-2.0-flash',
+        model='gemini-1.5-flash',
         contents=prompt_final
     )
     

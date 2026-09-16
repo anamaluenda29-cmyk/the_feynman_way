@@ -12,9 +12,21 @@ st.write(
 )
 
 # 2. CONEXIÓN DEL MOTOR CON LA LLAVE DE SEGURIDAD
-api_key_secreta = st.secrets.get("GEMINI_API_KEY") or os.environ.get(
-    "GEMINI_API_KEY"
-)
+# Intentamos obtener la llave de manera segura
+api_key = None
+
+# 1. Intentamos primero por variable de entorno (ideal para Render y consola)
+try:
+  api_key = os.environ.get("GEMINI_API_KEY")
+except Exception:
+  pass
+
+# 2. Si no está ahí, intentamos con los secretos de Streamlit (ideal para Streamlit Cloud)
+if not api_key:
+  try:
+    api_key = st.secrets.get("GEMINI_API_KEY")
+  except Exception:
+    pass
 client = genai.Client(api_key=api_key_secreta)
 
 # 3. MEMORIA TEMPORAL DE LA CONVERSACIÓN

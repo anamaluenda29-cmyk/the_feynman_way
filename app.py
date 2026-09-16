@@ -67,7 +67,7 @@ if duda_usuario:
   try:
     response = client.models.generate_content(
         model="gemini-2.0-flash", contents=prompt_final)    
-      respuesta_ia = response.text
+    respuesta_ia = response.text
   except Exception as e:
     respuesta_ia = (
         f"Alerta del sistema: Ocurrió un detalle técnico en la API ({e}). "

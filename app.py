@@ -12,7 +12,6 @@ st.write(
 )
 # 2. CONEXIÓN DEL MOTOR CON LA LLAVE DE SEGURIDAD (Blindada para Render y Streamlit Cloud)
 api_key_secreta = None
-
 # Primero intenta leer desde el entorno del sistema (Render / Consola local)
 try:
   api_key_secreta = os.environ.get("GEMINI_API_KEY")

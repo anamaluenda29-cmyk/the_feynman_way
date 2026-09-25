@@ -83,7 +83,7 @@ if duda_usuario:
   # 6. LLAMADO AL MOTOR ESTABLE DE INTELIGENCIA ARTIFICIAL
   try:
     response = client.models.generate_content(
-        model="gemini-2.5-flash", contents=prompt_final
+        model="gemini-3.8-flash", contents=prompt_final
     )
     respuesta_ia = response.text
   except Exception as e:

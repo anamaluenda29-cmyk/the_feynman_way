@@ -20,6 +20,11 @@ try:
 except Exception:
   pass
 
+# Diagnóstico temporal para ver si la llave llegó al servidor
+st.write(
+    "¿Llave detectada por el sistema?", bool(api_key_secreta)
+)  # Si dice False, la variable no está llegando desde Render.
+
 # Si no la encuentra, intenta leer desde los secretos de Streamlit (Streamlit Cloud)
 if not api_key_secreta:
   try:

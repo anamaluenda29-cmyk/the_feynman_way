@@ -25,7 +25,6 @@ if not api_key_secreta:
     pass
 
 client = genai.Client(api_key=api_key_secreta)
-)
 client = genai.Client(api_key=api_key_secreta)
 
 # 3. MEMORIA TEMPORAL DE LA CONVERSACIÓN

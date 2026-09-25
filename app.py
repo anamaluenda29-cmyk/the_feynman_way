@@ -10,10 +10,22 @@ st.write(
     "enlaces sinápticos. Este sistema tiene prohibido crear soluciones "
     "sin primero hacer que el usuario cree un esfuerzo cognitivo."
 )
+# 2. CONEXIÓN DEL MOTOR CON LA LLAVE DE SEGURIDAD (Blindada para Render y Streamlit Cloud)
+api_key_secreta = None
 
-# 2. CONEXIÓN DEL MOTOR CON LA LLAVE DE SEGURIDAD
-api_key_secreta = st.secrets.get("GEMINI_API_KEY") or os.environ.get(
-    "GEMINI_API_KEY"
+# Primero intenta leer desde el entorno del sistema (Render / Consola local)
+try:
+  api_key_secreta = os.environ.get("GEMINI_API_KEY")
+except Exception:
+  pass
+# Si no la encuentra, intenta leer desde los secretos de Streamlit (Streamlit Cloud)
+if not api_key_secreta:
+  try:
+    api_key_secreta = st.secrets.get("GEMINI_API_KEY")
+  except Exception:
+    pass
+
+client = genai.Client(api_key=api_key_secreta)
 )
 client = genai.Client(api_key=api_key_secreta)
 

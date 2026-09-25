@@ -41,6 +41,8 @@ if "mensajes" not in st.session_state:
 for msg in st.session_state.mensajes:
   st.chat_message(msg["rol"]).write(msg["texto"])
 
+import time
+
 # 4. ENTRADA DE TEXTO DEL USUARIO
 duda_usuario = st.chat_input("Dime, ¿Qué quieres crear o averiguar?")
 
@@ -80,37 +82,33 @@ if duda_usuario:
 
   prompt_final = regla_estricta + duda_usuario
 
-import time  # Asegúrate de tener 'import time' arriba si es necesario
+  # 6. LLAMADO AL MOTOR CON REINTENTO AUTOMÁTICO
+  respuesta_ia = None
+  intentos = 2
 
-# 6. LLAMADO AL MOTOR ESTABLE DE INTELIGencia ARTIFICIAL CON REINTENTO AUTOMÁTICO
-respuesta_ia = None
-intentos = 2
-
-for intento in range(intentos):
-  try:
-    response = client.models.generate_content(
-        model="gemini-3.8-flash", contents=prompt_final
-    )
-    respuesta_ia = response.text
-    break  # Si sale bien, rompe el ciclo y continúa
-  except Exception as e:
-    error_str = str(e)
-    # Si es un error de alta demanda (503), esperamos y reintentamos
-    if "503" in error_str or "UNAVAILABLE" in error_str:
-      if intento < intentos - 1:
-        time.sleep(2)  # Espera 2 segundos antes de reintentar
-        continue
-    # Si es otro tipo de error o se agotaron los reintentos:
-    if "API_KEY" in error_str or "400" in error_str:
-      respuesta_ia = (
-          "Alerta del sistema: La clave de API es inválida o tiene formato"
-          f" incorrecto ({e})."
+  for intento in range(intentos):
+    try:
+      response = client.models.generate_content(
+          model="gemini-3.8-flash", contents=prompt_final
       )
-    else:
-      respuesta_ia = (
-          "Alerta de red de Google (Alta demanda temporal). Por favor, repite"
-          f" tu mensaje en un momento ({e})."
-      )
+      respuesta_ia = response.text
+      break
+    except Exception as e:
+      error_str = str(e)
+      if "503" in error_str or "UNAVAILABLE" in error_str:
+        if intento < intentos - 1:
+          time.sleep(2)
+          continue
+      if "API_KEY" in error_str or "400" in error_str:
+        respuesta_ia = (
+            "Alerta del sistema: La clave de API es inválida o tiene formato"
+            f" incorrecto ({e})."
+        )
+      else:
+        respuesta_ia = (
+            "Alerta de red de Google (Alta demanda temporal). Por favor,"
+            f" repite tu mensaje en un momento ({e})."
+        )
 
   # 7. EXTRACCIÓN Y PINTURA DE LA RESPUESTA EN PANTALLA
   st.chat_message("assistant").write(respuesta_ia)

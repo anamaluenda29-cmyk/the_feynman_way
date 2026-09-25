@@ -10,13 +10,16 @@ st.write(
     "enlaces sinápticos. Este sistema tiene prohibido crear soluciones "
     "sin primero hacer que el usuario cree un esfuerzo cognitivo."
 )
+
 # 2. CONEXIÓN DEL MOTOR CON LA LLAVE DE SEGURIDAD (Blindada para Render y Streamlit Cloud)
 api_key_secreta = None
+
 # Primero intenta leer desde el entorno del sistema (Render / Consola local)
 try:
   api_key_secreta = os.environ.get("GEMINI_API_KEY")
 except Exception:
   pass
+
 # Si no la encuentra, intenta leer desde los secretos de Streamlit (Streamlit Cloud)
 if not api_key_secreta:
   try:
@@ -24,7 +27,6 @@ if not api_key_secreta:
   except Exception:
     pass
 
-client = genai.Client(api_key=api_key_secreta)
 client = genai.Client(api_key=api_key_secreta)
 
 # 3. MEMORIA TEMPORAL DE LA CONVERSACIÓN
@@ -76,7 +78,8 @@ if duda_usuario:
   # 6. LLAMADO AL MOTOR ESTABLE DE INTELIGENCIA ARTIFICIAL
   try:
     response = client.models.generate_content(
-        model="gemini-3.6-flash", contents=prompt_final)    
+        model="gemini-3.6-flash", contents=prompt_final
+    )
     respuesta_ia = response.text
   except Exception as e:
     respuesta_ia = (

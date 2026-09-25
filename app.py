@@ -80,17 +80,37 @@ if duda_usuario:
 
   prompt_final = regla_estricta + duda_usuario
 
-  # 6. LLAMADO AL MOTOR ESTABLE DE INTELIGENCIA ARTIFICIAL
+import time  # Asegúrate de tener 'import time' arriba si es necesario
+
+# 6. LLAMADO AL MOTOR ESTABLE DE INTELIGencia ARTIFICIAL CON REINTENTO AUTOMÁTICO
+respuesta_ia = None
+intentos = 2
+
+for intento in range(intentos):
   try:
     response = client.models.generate_content(
         model="gemini-3.8-flash", contents=prompt_final
     )
     respuesta_ia = response.text
+    break  # Si sale bien, rompe el ciclo y continúa
   except Exception as e:
-    respuesta_ia = (
-        f"Alerta del sistema: Ocurrió un detalle técnico en la API ({e}). "
-        "Verifica tu clave de seguridad en los Secrets."
-    )
+    error_str = str(e)
+    # Si es un error de alta demanda (503), esperamos y reintentamos
+    if "503" in error_str or "UNAVAILABLE" in error_str:
+      if intento < intentos - 1:
+        time.sleep(2)  # Espera 2 segundos antes de reintentar
+        continue
+    # Si es otro tipo de error o se agotaron los reintentos:
+    if "API_KEY" in error_str or "400" in error_str:
+      respuesta_ia = (
+          "Alerta del sistema: La clave de API es inválida o tiene formato"
+          f" incorrecto ({e})."
+      )
+    else:
+      respuesta_ia = (
+          "Alerta de red de Google (Alta demanda temporal). Por favor, repite"
+          f" tu mensaje en un momento ({e})."
+      )
 
   # 7. EXTRACCIÓN Y PINTURA DE LA RESPUESTA EN PANTALLA
   st.chat_message("assistant").write(respuesta_ia)

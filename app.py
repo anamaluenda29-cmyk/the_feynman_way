@@ -2,6 +2,7 @@ import os
 import time
 import streamlit as st
 from google import genai
+from google.genai import types # <- LA NUEVA PIEZA PARA ABRIR EL PUERTO
 
 # 1. LA INTERFAZ VISUAL
 st.title("The Feynman Way")
@@ -35,30 +36,22 @@ if not api_key_secreta:
 
 client = genai.Client(api_key=api_key_secreta)
 
-# 3. MEMORIA TEMPORAL DE LA CONVERSACIÓN
+
+# 3. MEMORIA TEMPORAL DE LA CONVERSACIÓN Y BÓVEDA DE REGLAS
 if "mensajes" not in st.session_state:
     st.session_state.mensajes = []
 
-for msg in st.session_state.mensajes:
-    st.chat_message(msg["rol"]).write(msg["texto"])
-
-# 4. ENTRADA DE TEXTO DEL USUARIO
-duda_usuario = st.chat_input("Dime, ¿Qué quieres crear o averiguar?")
-
-if duda_usuario:
-    st.chat_message("user").write(duda_usuario)
-    st.session_state.mensajes.append({"rol": "user", "texto": duda_usuario})
-
-    # 5. EL MIDDLEWARE (LA FRICCIÓN COGNITIVA COMPLETA)
-    regla_estricta = (
+# EL NUEVO VAGÓN BLINDADO PARA TUS REGLAS ESTRICTAS (Se carga solo 1 vez)
+if "reglas" not in st.session_state:
+    st.session_state.reglas = (
         "[ ROL PRINCIPAL ]\n"
-        "Eres un potenciador del pensamiento y el desarrollo cognitivo"
-        "objetivo es formar nuevas conecciones sinapticas, no entregarle la respuesta"
+        "Eres un potenciador del pensamiento y el desarrollo cognitivo. Tu "
+        "objetivo es formar nuevas conecciones sinapticas, no entregarle la respuesta "
         "sin esfuerzo.\n\n"
         "[ REGLAS CRÍTICAS DE COMPORTAMIENTO ]\n"
         "1. no le entregues la respuesta final sin que lo entienda. Debes guiarlo de manera sutil "
         "para encontrar la respuesta o el resultado.\n"
-        "2. ADICTIVO: al igual que es adictivo ver tik toks, debe ser adictivo hablar contigo y estudiar a la par,"
+        "2. ADICTIVO: al igual que es adictivo ver tik toks, debe ser adictivo hablar contigo y estudiar a la par, "
         "debes reforzar el comportamiento de un pensador y mitigar la falta de confianza.\n"
         "3. MÉTODO: Usa el metodo socratico, la tecnica feynman, active recall y critical thinking "
         "mirar problemas con entusiasmo y una mente prodigioza.\n\n"
@@ -67,22 +60,31 @@ if duda_usuario:
         "bloqueo mental o dudas severas:\n"
         "- Activa un marco de neuroplasticidad adaptativa: recuérdale que el "
         "cerebro humano es un sistema dinámico y optimizable.\n"
-        " has uso de la neuroplasticidad para mantener en el flujo de aprensizaje\n"
+        "- has uso de la neuroplasticidad para mantener en el flujo de aprensizaje\n"
         "- motiva alentandolo por sus grandes capacidades "
         "diseño que entrega información exacta para subir de nivel.\n"
-        "dopamina por progreso y romper la parálisis por análisis.\n"
+        "- dopamina por progreso y romper la parálisis por análisis.\n"
         "- Mantén una postura validando el esfuerzo del proceso deductivo "
         "(frustración productiva).\n\n"
         "[ GESTIÓN DE LA CONVERSACIÓN ]\n"
         "4- INFORMACION VALIDADA CON FUENTES CONFIABLES Y ENTREGANDO INFORMACION\n"
-        " - entrega informacion de revistas academicas, libros de buena reputacion academica\n"
+        " - entrega informacion de revistas academicas, libros de buena reputacion academica "
         "paginas universitarias de gran prestigio y entrega las fuentes para que el usuario las revice.\n\n"
         "5. MANTENIMIENTO DEL HILO: Recuerda siempre el objetivo principal. "
-        "No permitas que la conversación se desvíe.\n\n"
-        "El usuario dice lo siguiente: "
+        "No permitas que la conversación se desvíe."
     )
 
-    prompt_final = regla_estricta + duda_usuario
+# Pintamos el historial en pantalla
+for msg in st.session_state.mensajes:
+    st.chat_message(msg["rol"]).write(msg["texto"])
+
+
+# 4. ENTRADA DE TEXTO DEL USUARIO
+duda_usuario = st.chat_input("Dime, ¿Qué quieres crear o averiguar?")
+
+if duda_usuario:
+    st.chat_message("user").write(duda_usuario)
+    st.session_state.mensajes.append({"rol": "user", "texto": duda_usuario})
 
     # 6. LLAMADO AL MOTOR CON REINTENTO AUTOMÁTICO
     respuesta_ia = None
@@ -90,9 +92,12 @@ if duda_usuario:
 
     for intento in range(intentos):
         try:
-            # EL CAMBIO CRÍTICO: Conectamos a la tubería válida de Google (1.5-flash)
             response = client.models.generate_content(
-                model="gemini-1.5-flash", contents=prompt_final
+                model="gemini-3.8-flash", 
+                contents=duda_usuario, # <- Solo enviamos la duda corta
+                config=types.GenerateContentConfig(
+                    system_instruction=st.session_state.reglas # <- Conectamos la tubería blindada
+                )
             )
             respuesta_ia = response.text
             break

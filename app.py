@@ -100,13 +100,7 @@ if duda_usuario:
                 )
             )
             respuesta_ia = response.text
-      
-      # --- NUEVO SENSOR DE AUDITORÍA ---
-      tokens_gastados = response.usage_metadata.total_token_count
-      st.caption(f"⚙️ Auditoría de red: {tokens_gastados} tokens procesados.")
-      # ---------------------------------
-      break
-
+            break
         except Exception as e:
             error_str = str(e)
             if "503" in error_str or "UNAVAILABLE" in error_str:

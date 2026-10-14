@@ -93,7 +93,7 @@ if duda_usuario:
     for intento in range(intentos):
         try:
             response = client.models.generate_content(
-                model="gemini-1.5-flash", 
+                model="gemini-3.8-flash", 
                 contents=duda_usuario, # <- Solo enviamos la duda corta
                 config=types.GenerateContentConfig(
                     system_instruction=st.session_state.reglas # <- Conectamos la tubería blindada
@@ -121,3 +121,4 @@ if duda_usuario:
     # 7. EXTRACCIÓN Y PINTURA DE LA RESPUESTA EN PANTALLA
     st.chat_message("assistant").write(respuesta_ia)
     st.session_state.mensajes.append({"rol": "assistant", "texto": respuesta_ia})
+    
